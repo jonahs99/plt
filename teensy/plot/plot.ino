@@ -14,11 +14,7 @@ void setup() {
 }
 
 void loop() {
-    noInterrupts();
-    bool stopped = steppersStopped;
-    interrupts();
-
-    if (stopped) {
+    if (steppersReady()) {
         if (commandsInBuffer > 0) {
             // Pop a command from the buffer
             Command cmd = commandBuffer[commandBack];
@@ -28,21 +24,19 @@ void loop() {
         }
     }
     
-    if (commandsInBuffer < BUFFER_LEN / 2) {
-        while (readInput()) { }
-    }
+    readInput();
 }
 
-int stepPosition[N_MOTORS] = { 0, 0 };
+long stepPosition[N_MOTORS] = { 0, 0 };
 
 void doCommand(Command cmd) {
     // Convert mm to step target
-    const int steps_per_mm = 80;
-    int stepTarget[N_MOTORS];
+    const long steps_per_mm = 80;
+    long stepTarget[N_MOTORS];
     for (int i = 0; i < N_MOTORS; i++) {
         stepTarget[i] = cmd.pos[i] * steps_per_mm;
     }
-    int stepsToMove[N_MOTORS];
+    long stepsToMove[N_MOTORS];
     for (int i = 0; i < N_MOTORS; i++) {
         stepsToMove[i] = stepTarget[i] - stepPosition[i];
     }
@@ -50,20 +44,15 @@ void doCommand(Command cmd) {
     // Compute step speed
     long dist = 0;
     for (int i = 0; i < N_MOTORS; i++) {
-      dist += sq(stepsToMove[i]);
+      dist += stepsToMove[i] * stepsToMove[i];
     }
     dist = sqrt(dist);
     if (dist == 0) return;
-
-    long totalTime = dist * 60 * 1000000 / steps_per_mm / cmd.feed;
-    int intervals[N_MOTORS];
-    for (int i = 0; i < N_MOTORS; i++) {
-        intervals[i] = totalTime / abs(stepsToMove[i]);
-    }
+    long totalTime = dist * ((double) 60 * (double) 1000000 / (double) steps_per_mm / (double) cmd.feed);
 
     // Update to the new position
     memcpy(stepPosition, stepTarget, sizeof(stepPosition));
 
     // Start moving!
-    startSteppers(stepsToMove, intervals);
+    startSteppers(stepsToMove, totalTime);
 }

@@ -33,7 +33,7 @@ bool parseCommand(String* line) {
 }
 
 bool readInput() {
-  if (commandsInBuffer < BUFFER_LEN && Serial.available() > 0) {
+  if (commandsInBuffer < BUFFER_LEN-1 && Serial.available() > 0) {
     String line = Serial.readStringUntil('\n');
     line.trim();
     if (parseCommand(&line)) {

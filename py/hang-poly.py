@@ -2,12 +2,13 @@ import math
 import random
 
 revs = 100
-s = 2
+s = 3
 
-dl = 0.4
+da = 2 * math.pi / 6
+a0 = 0
 
 min_speed = 500
-max_speed = 2000
+max_speed = 4000
 ramp_revs = 8
 
 def to(x, y, f=1000):
@@ -16,7 +17,7 @@ def to(x, y, f=1000):
 print('M211 S0')
 print('G92 X0 Y0')
 
-a = 0
+a = a0
 while a < 2 * math.pi * revs:
     r = a / 2 / math.pi * s
 
@@ -28,5 +29,5 @@ while a < 2 * math.pi * revs:
 
     to(x, y, f)
 
-    a += dl / max(r, 1)
+    a += da
 

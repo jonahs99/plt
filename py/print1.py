@@ -30,6 +30,8 @@ for line in sys.stdin:
     if line:
         send(line + '\r\n')
 
+        while ser.in_waiting:
+            print('read', ser.readline().decode('utf-8').strip())
         # wait_for_ok() # wait for a response
 
 ser.close()
