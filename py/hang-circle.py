@@ -4,14 +4,14 @@ import random
 revs = 100
 s = 2
 
-dl = 0.4
+dl = 1
 
 min_speed = 500
-max_speed = 2000
+max_speed = 4000
 ramp_revs = 8
 
 def to(x, y, f=1000):
-    print('G1F{:.0f}X{:.1f}Y{:.1f}'.format(f, x, y))
+    print('G1 F{:.0f} X{:.1f} Y{:.1f}'.format(f, x, y))
 
 print('M211 S0')
 print('G92 X0 Y0')

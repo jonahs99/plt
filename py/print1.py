@@ -5,8 +5,7 @@ import time
 device = '/dev/ttyACM0'
 
 def send(s):
-    # time.sleep(0.01)
-    print('sending', s, flush=True)
+    print('sending', s)
     ser.write(s.encode('utf-8'))
 
 def wait_for_ok():
@@ -24,15 +23,25 @@ ser = serial.Serial(device, 250000)
 
 time.sleep(2)
 
+recv = 0
+
 import sys
 for line in sys.stdin:
+    print(ser.in_waiting)
+    while ser.in_waiting:
+            print('read', ser.readline().decode('utf-8').strip())
+            # num = int(ser.readline().decode('utf-8'))
+            # if num != recv + 1:
+            #     print('GOT {} AFTER {}'.format(num, recv))
+            # recv = num
+
+            # if num % 1000 == 0:
+            #     print(num)
+        # wait_for_ok() # wait for a response
+
     line = line.split(';')[0].rstrip()
     if line:
         send(line + '\r\n')
-
-        while ser.in_waiting:
-            print('read', ser.readline().decode('utf-8').strip())
-        # wait_for_ok() # wait for a response
 
 ser.close()
 

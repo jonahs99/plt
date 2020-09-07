@@ -10,7 +10,11 @@ void setup() {
     Serial.begin(250000);
     Serial.setTimeout(10000);
 
-    Serial.println("ok");
+    // Serial.println("ok");
+
+    // while (1) {
+    //     Serial.println(Serial.readStringUntil('\n'));
+    // }
 }
 
 void loop() {
@@ -31,7 +35,7 @@ long stepPosition[N_MOTORS] = { 0, 0 };
 
 void doCommand(Command cmd) {
     // Convert mm to step target
-    const long steps_per_mm = 80;
+    const long steps_per_mm = 40;
     long stepTarget[N_MOTORS];
     for (int i = 0; i < N_MOTORS; i++) {
         stepTarget[i] = cmd.pos[i] * steps_per_mm;
@@ -48,11 +52,21 @@ void doCommand(Command cmd) {
     }
     dist = sqrt(dist);
     if (dist == 0) return;
+    if (dist > 1.1) {
+        Serial.println("Dist");
+        Serial.println(dist);
+        Serial.println("Target");
+        Serial.println(stepTarget[0]);
+        Serial.println(stepTarget[1]);
+    }
     long totalTime = dist * ((double) 60 * (double) 1000000 / (double) steps_per_mm / (double) cmd.feed);
 
     // Update to the new position
     memcpy(stepPosition, stepTarget, sizeof(stepPosition));
 
     // Start moving!
+    // Serial.println("Moving");
+    // Serial.println(stepsToMove[0]);
+    // Serial.println(stepsToMove[1]);
     startSteppers(stepsToMove, totalTime);
 }

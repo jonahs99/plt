@@ -1,21 +1,21 @@
 #include <Arduino.h>
 
 typedef struct {
-  float feed;
-  float pos[2];
+  double feed;
+  double pos[2];
 } Command;
 
 Command command = { 1000, { 0, 0 } };
 
-const int BUFFER_LEN = 16;
+const int BUFFER_LEN = 1;
 Command commandBuffer[BUFFER_LEN];
 int commandBack = 0;
 int commandsInBuffer = 0;
 
-void parseCoord(String* str, char chr, float* dest) {
+void parseCoord(String* str, char chr, double* dest) {
   int idx = str->indexOf(chr);
   if (idx != -1) {
-    *dest = str->substring(idx+1).toFloat();
+    *dest = atof(str->substring(idx+1).c_str());
   }
 }
 
@@ -28,20 +28,20 @@ bool parseCommand(String* line) {
     return true;
   }
 
-  Serial.println(String("// Unknown command: ").concat(*line));
+  // Serial.println(String("// Unknown command: ").concat(*line));
   return false;
 }
 
 bool readInput() {
-  if (commandsInBuffer < BUFFER_LEN-1 && Serial.available() > 0) {
+  if (commandsInBuffer < BUFFER_LEN && Serial.available() > 0) {
     String line = Serial.readStringUntil('\n');
     line.trim();
     if (parseCommand(&line)) {
-      memcpy(&commandBuffer[(commandBack + commandsInBuffer) % BUFFER_LEN], &command, sizeof(command));
+      commandBuffer[(commandBack + commandsInBuffer) % BUFFER_LEN] = command;
       commandsInBuffer += 1;
       return true;
     }
-    Serial.println("ok");
+    // Serial.println("ok");
   }
   return false;
 }

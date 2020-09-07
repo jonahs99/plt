@@ -49,7 +49,7 @@ void startSteppers(long steps[], long time) {
     noInterrupts();
     _stepCount = time / _stepperTimerInterval;
     for (int i = 0; i < N_MOTORS; i++) {
-        digitalWrite(dirPins[i], steps[i] > 0 ? HIGH : LOW);
+        digitalWriteFast(dirPins[i], (steps[i] > 0) ? HIGH : LOW);
         long nSteps = abs(steps[i]);
         _stepTargets[i] = nSteps;
         _stepCurrent[i] = 0;
