@@ -35,6 +35,10 @@ fn stream(opts: Opts) {
     while {line.clear(); stdin().read_line(&mut line).is_ok()} {
         println!("{}", &line);
 
+        if line.starts_with(';') {
+            continue;
+        }
+
         if !port.write(line.as_bytes()).is_ok() {
             let mut read = Vec::new();
             while port.read(&mut read).unwrap() > 0 { }
