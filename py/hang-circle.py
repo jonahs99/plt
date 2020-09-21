@@ -6,8 +6,8 @@ s = 2
 
 dl = 1
 
-min_speed = 500
-max_speed = 4000
+min_speed = 1000
+max_speed = 10000
 ramp_revs = 8
 
 def to(x, y, f=1000):

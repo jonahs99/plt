@@ -2,10 +2,10 @@ import math
 import random
 
 revs = 100
-s = 2
-w_amp = 2
-w_speed = 9
-r0 = 6
+s = 1
+w_amp = 3
+w_speed = 9.02
+r0 = 2
 
 dl = 0.4
 

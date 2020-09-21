@@ -1,11 +1,18 @@
 #include "stepper.h"
 #include "gcode.h"
 
+#include <Servo.h>
+
 const int ledPin = 13;
+const int servoPin = 17;
+
+Servo servo;
 
 void setup() {
     pinMode(ledPin, OUTPUT);
     initStepperPins();
+    servo.attach(servoPin);
+    servo.write(30);
 
     Serial.begin(250000);
     Serial.setTimeout(10000);
@@ -32,10 +39,17 @@ void loop() {
 }
 
 long stepPosition[N_MOTORS] = { 0, 0 };
+double servoPos = -1;
 
 void doCommand(Command cmd) {
+    if (cmd.servoPos != servoPos) {
+        servoPos = cmd.servoPos;
+        servo.write(servoPos);
+        delay(250);
+    }
+
     // Convert mm to step target
-    const long steps_per_mm = 40;
+    const long steps_per_mm = 46;
     long stepTarget[N_MOTORS];
     for (int i = 0; i < N_MOTORS; i++) {
         stepTarget[i] = cmd.pos[i] * steps_per_mm;

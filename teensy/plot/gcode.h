@@ -3,9 +3,11 @@
 typedef struct {
   double feed;
   double pos[2];
+
+  double servoPos;
 } Command;
 
-Command command = { 1000, { 0, 0 } };
+Command command = { 1000, { 0, 0 }, 0 };
 
 const int BUFFER_LEN = 1;
 Command commandBuffer[BUFFER_LEN];
@@ -21,14 +23,25 @@ void parseCoord(String* str, char chr, double* dest) {
 
 bool parseCommand(String* line) {
   if (!line->length()) return false;
+
+  bool ok = false;
+
+  if (line->startsWith("M280")) {
+    parseCoord(line, 'S', &command.servoPos);
+    ok = true;
+  }
   if (line->startsWith("G0") || line->startsWith("G1")) {
     parseCoord(line, 'X', &command.pos[0]);
     parseCoord(line, 'Y', &command.pos[1]);
     parseCoord(line, 'F', &command.feed);
+    ok = true;
+  }
+
+  if (ok) {
     return true;
   }
 
-  // Serial.println(String("// Unknown command: ").concat(*line));
+  Serial.println(String("// Unknown command: ").concat(*line));
   return false;
 }
 
