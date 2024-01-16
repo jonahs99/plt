@@ -6,22 +6,22 @@ isup = True
 def to(x, y):
     a = x + y
     b = x - y
-    f = 4000 if isup else 1000
+    f = 10000 if isup else 3000
     print('G1 F{:.0f} X{:.1f} Y{:.1f}'.format(f, a, b))
 
 def up():
     global isup
     isup = True
-    print('M280 S30')
+    print('M280 S0')
 
 def down():
     global isup
     isup = False
-    print('M280 S5')
+    print('M280 S12')
 
-n = 10
+n = 12
 r = 3
-s = 12
+s = 6
 
 seed = random.randrange(1000000)
 

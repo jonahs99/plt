@@ -12,16 +12,10 @@ void setup() {
     pinMode(ledPin, OUTPUT);
     initStepperPins();
     servo.attach(servoPin);
-    servo.write(30);
+    servo.write(0);
 
     Serial.begin(250000);
     Serial.setTimeout(10000);
-
-    // Serial.println("ok");
-
-    // while (1) {
-    //     Serial.println(Serial.readStringUntil('\n'));
-    // }
 }
 
 void loop() {
@@ -45,7 +39,7 @@ void doCommand(Command cmd) {
     if (cmd.servoPos != servoPos) {
         servoPos = cmd.servoPos;
         servo.write(servoPos);
-        delay(250);
+        delay(150);
     }
 
     // Convert mm to step target
@@ -66,21 +60,10 @@ void doCommand(Command cmd) {
     }
     dist = sqrt(dist);
     if (dist == 0) return;
-    if (dist > 1.1) {
-        Serial.println("Dist");
-        Serial.println(dist);
-        Serial.println("Target");
-        Serial.println(stepTarget[0]);
-        Serial.println(stepTarget[1]);
-    }
     long totalTime = dist * ((double) 60 * (double) 1000000 / (double) steps_per_mm / (double) cmd.feed);
 
-    // Update to the new position
+    // Update to the new positions
     memcpy(stepPosition, stepTarget, sizeof(stepPosition));
 
-    // Start moving!
-    // Serial.println("Moving");
-    // Serial.println(stepsToMove[0]);
-    // Serial.println(stepsToMove[1]);
     startSteppers(stepsToMove, totalTime);
 }

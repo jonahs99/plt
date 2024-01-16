@@ -8,5 +8,5 @@ edition = "2018"
 
 [dependencies]
 serial = "0.4"
-clap = "3.0.0-beta.1"
+clap = { version = "4.4", features = ["derive"] }
 

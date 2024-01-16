@@ -9,10 +9,13 @@ typedef struct {
 
 Command command = { 1000, { 0, 0 }, 0 };
 
-const int BUFFER_LEN = 1;
+const int BUFFER_LEN = 2;
 Command commandBuffer[BUFFER_LEN];
 int commandBack = 0;
 int commandsInBuffer = 0;
+
+char serialBuffer[1024];
+int serialLen = 0;
 
 void parseCoord(String* str, char chr, double* dest) {
   int idx = str->indexOf(chr);
@@ -47,14 +50,26 @@ bool parseCommand(String* line) {
 
 bool readInput() {
   if (commandsInBuffer < BUFFER_LEN && Serial.available() > 0) {
-    String line = Serial.readStringUntil('\n');
-    line.trim();
-    if (parseCommand(&line)) {
-      commandBuffer[(commandBack + commandsInBuffer) % BUFFER_LEN] = command;
-      commandsInBuffer += 1;
-      return true;
+    char ch = Serial.read();
+    if (ch == -1) {
+      return false;
     }
-    // Serial.println("ok");
+
+    if (ch == '\n') {
+       serialBuffer[serialLen] = '\0';
+       serialLen = 0;
+
+       String line = String(serialBuffer);
+       line.trim();
+       if (parseCommand(&line)) {
+         commandBuffer[(commandBack + commandsInBuffer) % BUFFER_LEN] = command;
+         commandsInBuffer += 1;
+         return true;
+       }
+    } else {
+       serialBuffer[serialLen] = ch;
+       serialLen++;
+    }
   }
   return false;
 }
